@@ -109,7 +109,7 @@ export default class Lobby {
      */
     disable() {
         if (!this.isSupported() || !this.mainRoom.isModerator()
-                || !this.lobbyRoom || !this.mainRoom.membersOnlyEnabled) {
+            || !this.lobbyRoom || !this.mainRoom.membersOnlyEnabled) {
             return;
         }
 
@@ -196,11 +196,11 @@ export default class Lobby {
                     this.lobbyRoom = undefined;
                     logger.info('Lobby room left!');
                 })
-                .catch(() => {}); // eslint-disable-line no-empty-function
+                .catch(() => { }); // eslint-disable-line no-empty-function
         }
 
         return Promise.reject(
-                new Error('The lobby has already been left'));
+            new Error('The lobby has already been left'));
     }
 
     /**
@@ -250,11 +250,11 @@ export default class Lobby {
 
         this.lobbyRoom = this.xmpp.createRoom(
             roomName, {
-                customDomain,
-                disableDiscoInfo: true,
-                disableFocus: true,
-                enableLobby: false
-            }
+            customDomain,
+            disableDiscoInfo: true,
+            disableFocus: true,
+            enableLobby: false
+        }
         );
 
         if (displayName) {
@@ -272,7 +272,7 @@ export default class Lobby {
             this.lobbyRoom.addEventListener(
                 XMPPEvents.MUC_MEMBER_JOINED,
                 // eslint-disable-next-line max-params
-                (from, nick, role, isHiddenDomain, statsID, status, identity, botType, jid) => {
+                (from, nick, serverId, role, isHiddenDomain, statsID, status, identity, botType, jid) => {
                     // we need to ignore joins on lobby for participants that are already in the main room
                     if (Object.values(this.mainRoom.members).find(m => m.jid === jid)) {
                         return;
@@ -429,7 +429,7 @@ export default class Lobby {
         let ids = param;
 
         if (!Array.isArray(param)) {
-            ids = [ param ];
+            ids = [param];
         }
 
         ids.forEach(id => {

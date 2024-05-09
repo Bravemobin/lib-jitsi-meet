@@ -1737,7 +1737,7 @@ JitsiConference.prototype.muteParticipant = function (id, mediaType) {
  *
  * @param jid the jid of the participant in the MUC
  * @param nick the display name of the participant
- * @param server_id the server id of the participant
+ * @param serverId the server id of the participant
  * @param role the role of the participant in the MUC
  * @param isHidden indicates if this is a hidden participant (system
  * participant for example a recorder).
@@ -1751,13 +1751,13 @@ JitsiConference.prototype.muteParticipant = function (id, mediaType) {
  * the same jwt.
  */
 JitsiConference.prototype.onMemberJoined = function (
-    jid, nick, server_id, role, isHidden, statsID, status, identity, botType, fullJid, features, isReplaceParticipant) {
+    jid, nick, serverId, role, isHidden, statsID, status, identity, botType, fullJid, features, isReplaceParticipant) {
     const id = Strophe.getResourceFromJid(jid);
 
     if (id === 'focus' || this.myUserId() === id) {
         return;
     }
-    const participant = new JitsiParticipant(jid, this, nick, server_id, isHidden, statsID, status, identity);
+    const participant = new JitsiParticipant(jid, this, nick, serverId, isHidden, statsID, status, identity);
 
     participant.setConnectionJid(fullJid);
     participant.setRole(role);

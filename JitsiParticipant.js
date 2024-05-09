@@ -27,12 +27,12 @@ export default class JitsiParticipant {
      * @param {boolean?} isReplacing - whether this is a participant replacing another into the meeting.
      * @param {boolean?} isReplaced - whether this is a participant to be kicked and replaced into the meeting.
      */
-    constructor(jid, conference, displayName, server_id, hidden, statsID, status, identity, isReplacing, isReplaced) {
+    constructor(jid, conference, displayName, serverId, hidden, statsID, status, identity, isReplacing, isReplaced) {
         this._jid = jid;
         this._id = Strophe.getResourceFromJid(jid);
         this._conference = conference;
         this._displayName = displayName;
-        this._server_id = server_id;
+        this._serverId = serverId;
         this._supportsDTMF = false;
         this._tracks = [];
         this._role = 'none';
@@ -138,7 +138,7 @@ export default class JitsiParticipant {
      * @returns {String} The human-readable server id of this participant.
      */
     getServerId() {
-        return this._server_id;
+        return this._serverId;
     }
 
     /**

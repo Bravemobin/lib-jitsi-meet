@@ -24,10 +24,10 @@ describe('ChatRoom', () => {
                 to: 'tojid',
                 from: 'fromjid'
             })
-            .c('fake-with-attr', {
-                fakeAttr1: 'attrValue1',
-                fakeAttr2: 'attrValue2'
-            }).up();
+                .c('fake-with-attr', {
+                    fakeAttr1: 'attrValue1',
+                    fakeAttr2: 'attrValue2'
+                }).up();
 
             parser.packet2JSON(p.tree(), nodes);
             expect(nodes.length).toBe(1);
@@ -50,7 +50,7 @@ describe('ChatRoom', () => {
                 to: 'tojid',
                 from: 'fromjid'
             })
-            .c('element-name').t('element-name-text').up();
+                .c('element-name').t('element-name-text').up();
 
             parser.packet2JSON(p.tree(), nodes);
 
@@ -68,14 +68,14 @@ describe('ChatRoom', () => {
                 to: 'tojid',
                 from: 'fromjid'
             })
-            .c('identity')
+                .c('identity')
                 .c('user')
-                    .c('id').t('id-text').up()
-                    .c('name').t('name-text').up()
-                    .c('avatar').t('avatar-text').up()
+                .c('id').t('id-text').up()
+                .c('name').t('name-text').up()
+                .c('avatar').t('avatar-text').up()
                 .up()
                 .c('group').t('group-text').up()
-            .up();
+                .up();
 
             parser.packet2JSON(p.tree(), nodes);
 
@@ -143,7 +143,7 @@ describe('ChatRoom', () => {
                     options: {}
                 }),
                 options: {},
-                addListener: () => {} // eslint-disable-line no-empty-function
+                addListener: () => { } // eslint-disable-line no-empty-function
             };
 
             room = new ChatRoom(
@@ -157,10 +157,10 @@ describe('ChatRoom', () => {
         it('parses status correctly', () => {
             const presStr = '' +
                 '<presence to="tojid" from="fromjid">' +
-                    '<x xmlns=\'http://jabber.org/protocol/muc#user\'>' +
-                        '<item jid=\'fulljid\'/>' +
-                    '</x>' +
-                    '<status>status-text</status>' +
+                '<x xmlns=\'http://jabber.org/protocol/muc#user\'>' +
+                '<item jid=\'fulljid\'/>' +
+                '</x>' +
+                '<status>status-text</status>' +
                 '</presence>';
             const pres = new DOMParser().parseFromString(presStr, 'text/xml').documentElement;
 
@@ -177,6 +177,7 @@ describe('ChatRoom', () => {
                 XMPPEvents.MUC_MEMBER_JOINED,
                 'fromjid',
                 undefined, // nick
+                '990000000001',
                 null, // role
                 false, // isHiddenDomain
                 undefined, // statsID
@@ -192,9 +193,9 @@ describe('ChatRoom', () => {
         it('parses muc user item correctly', () => {
             const presStr = '' +
                 '<presence to="tojid" from="fromjid">' +
-                    '<x xmlns="http://jabber.org/protocol/muc#user">' +
-                        '<item jid="jid=attr" affiliation="affiliation-attr" role="role-attr"/>' +
-                    '</x>' +
+                '<x xmlns="http://jabber.org/protocol/muc#user">' +
+                '<item jid="jid=attr" affiliation="affiliation-attr" role="role-attr"/>' +
+                '</x>' +
                 '</presence>';
             const pres = new DOMParser().parseFromString(presStr, 'text/xml').documentElement;
 
@@ -212,6 +213,7 @@ describe('ChatRoom', () => {
                 XMPPEvents.MUC_MEMBER_JOINED,
                 'fromjid',
                 undefined, // nick
+                '990000000001',
                 'role-attr', // role
                 jasmine.any(Boolean), // isHiddenDomain
                 undefined, // statsID
@@ -225,12 +227,12 @@ describe('ChatRoom', () => {
 
         it('parses muc user replacing other user correctly', () => {
             const presStr = '' +
-              '<presence to="tojid" from="fromjid">' +
-                  '<x xmlns="http://jabber.org/protocol/muc#user">' +
-                      '<item jid="jid=attr" affiliation="affiliation-attr" role="role-attr"/>' +
-                  '</x>' +
-                  '<flip_device />' +
-              '</presence>';
+                '<presence to="tojid" from="fromjid">' +
+                '<x xmlns="http://jabber.org/protocol/muc#user">' +
+                '<item jid="jid=attr" affiliation="affiliation-attr" role="role-attr"/>' +
+                '</x>' +
+                '<flip_device />' +
+                '</presence>';
             const pres = new DOMParser().parseFromString(presStr, 'text/xml').documentElement;
 
             room.onPresence(pres);
@@ -243,35 +245,36 @@ describe('ChatRoom', () => {
                 XMPPEvents.MUC_JOIN_IN_PROGRESS
             ]);
             expect(emitterSpy).toHaveBeenCalledWith(
-              XMPPEvents.MUC_MEMBER_JOINED,
-              'fromjid',
-              undefined, // nick
-              'role-attr', // role
-              jasmine.any(Boolean), // isHiddenDomain
-              undefined, // statsID
-              undefined,
-              undefined,
-              undefined,
-              'jid=attr',
-              undefined, // features
-              1); // isReplaceParticipant
+                XMPPEvents.MUC_MEMBER_JOINED,
+                'fromjid',
+                undefined, // nick
+                '990000000001',
+                'role-attr', // role
+                jasmine.any(Boolean), // isHiddenDomain
+                undefined, // statsID
+                undefined,
+                undefined,
+                undefined,
+                'jid=attr',
+                undefined, // features
+                1); // isReplaceParticipant
         });
 
         it('parses identity correctly', () => {
             const presStr = '' +
                 '<presence to="tojid" from="fromjid">' +
-                    '<x xmlns=\'http://jabber.org/protocol/muc#user\'>' +
-                        '<item jid=\'fulljid\'/>' +
-                    '</x>' +
-                    '<status>status-text</status>' +
-                    '<identity>' +
-                        '<user>' +
-                            '<id>id-text</id>' +
-                            '<name>name-text</name>' +
-                            '<avatar>avatar-text</avatar>' +
-                        '</user>' +
-                        '<group>group-text</group>' +
-                    '</identity>' +
+                '<x xmlns=\'http://jabber.org/protocol/muc#user\'>' +
+                '<item jid=\'fulljid\'/>' +
+                '</x>' +
+                '<status>status-text</status>' +
+                '<identity>' +
+                '<user>' +
+                '<id>id-text</id>' +
+                '<name>name-text</name>' +
+                '<avatar>avatar-text</avatar>' +
+                '</user>' +
+                '<group>group-text</group>' +
+                '</identity>' +
                 '</presence>';
             const pres = new DOMParser().parseFromString(presStr, 'text/xml').documentElement;
 
@@ -297,6 +300,7 @@ describe('ChatRoom', () => {
                 XMPPEvents.MUC_MEMBER_JOINED,
                 'fromjid',
                 undefined, // nick
+                '990000000001',
                 null, // role
                 false, // isHiddenDomain
                 undefined, // statsID
@@ -313,11 +317,11 @@ describe('ChatRoom', () => {
             const expectedBotType = 'some_bot_type';
             const presStr = '' +
                 '<presence to="tojid" from="fromjid">' +
-                    '<x xmlns=\'http://jabber.org/protocol/muc#user\'>' +
-                        '<item jid=\'fulljid\'/>' +
-                    '</x>' +
-                    '<status>status-text</status>' +
-                    `<bot type="${expectedBotType}"/>` +
+                '<x xmlns=\'http://jabber.org/protocol/muc#user\'>' +
+                '<item jid=\'fulljid\'/>' +
+                '</x>' +
+                '<status>status-text</status>' +
+                `<bot type="${expectedBotType}"/>` +
                 '</presence>';
             const pres = new DOMParser().parseFromString(presStr, 'text/xml').documentElement;
 
@@ -334,6 +338,7 @@ describe('ChatRoom', () => {
                 XMPPEvents.MUC_MEMBER_JOINED,
                 'fromjid',
                 undefined, // nick
+                '990000000001',
                 null, // role
                 false, // isHiddenDomain
                 undefined, // statsID
@@ -358,12 +363,12 @@ describe('ChatRoom', () => {
                     options: {}
                 }),
                 options: {},
-                addListener: () => {} // eslint-disable-line no-empty-function
+                addListener: () => { } // eslint-disable-line no-empty-function
             };
 
             room = new ChatRoom(
                 // eslint-disable-next-line no-empty-function
-                { send: () => {} } /* connection */,
+                { send: () => { } } /* connection */,
                 'jid',
                 'password',
                 xmpp,
