@@ -572,7 +572,7 @@ export default class ChatRoom extends Listenable {
 
         parser.packet2JSON(pres, nodes);
         this.lastPresences[from] = nodes;
-        console.log("nodesnodesnodes", nodes)
+        console.log("nodesnodesnodes", nodes, member)
         for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
 
