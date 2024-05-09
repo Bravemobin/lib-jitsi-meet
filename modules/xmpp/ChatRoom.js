@@ -99,7 +99,7 @@ export function filterNodeFromPresenceJSON(pres, nodeName) {
  * Array of affiliations that are allowed in members only room.
  * @type {string[]}
  */
-const MEMBERS_AFFILIATIONS = [ 'owner', 'admin', 'member' ];
+const MEMBERS_AFFILIATIONS = ['owner', 'admin', 'member'];
 
 /**
  * Process nodes to extract data needed for MUC_JOINED and MUC_MEMBER_JOINED events.
@@ -111,7 +111,7 @@ function extractIdentityInformation(node, hiddenFromRecorderFeatureEnabled) {
 
     if (userInfo) {
         identity.user = {};
-        const tags = [ 'id', 'name', 'avatar' ];
+        const tags = ['id', 'name', 'avatar'];
 
         if (hiddenFromRecorderFeatureEnabled) {
             tags.push('hidden-from-recorder');
@@ -357,7 +357,7 @@ export default class ChatRoom extends Listenable {
             const locked
                 = $(result).find('>query>feature[var="muc_passwordprotected"]')
                     .length
-                    === 1;
+                === 1;
 
             if (locked !== this.locked) {
                 this.eventEmitter.emit(XMPPEvents.MUC_LOCK_CHANGED, locked);
@@ -435,7 +435,7 @@ export default class ChatRoom extends Listenable {
             logger.error('Error getting room info: ', error);
             this.eventEmitter.emit(XMPPEvents.ROOM_DISCO_INFO_FAILED, error);
         },
-        IQ_TIMEOUT);
+            IQ_TIMEOUT);
     }
 
     /**
@@ -464,27 +464,35 @@ export default class ChatRoom extends Listenable {
             return;
         }
 
-        const getForm = $iq({ type: 'get',
-            to: this.roomjid })
+        const getForm = $iq({
+            type: 'get',
+            to: this.roomjid
+        })
             .c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' })
-            .c('x', { xmlns: 'jabber:x:data',
-                type: 'submit' });
+            .c('x', {
+                xmlns: 'jabber:x:data',
+                type: 'submit'
+            });
 
         this.connection.sendIQ(getForm, form => {
             if (!$(form).find(
-                    '>query>x[xmlns="jabber:x:data"]'
-                    + '>field[var="muc#roomconfig_whois"]').length) {
+                '>query>x[xmlns="jabber:x:data"]'
+                + '>field[var="muc#roomconfig_whois"]').length) {
                 logger.error('non-anonymous rooms not supported');
 
                 return;
             }
 
-            const formSubmit = $iq({ to: this.roomjid,
-                type: 'set' })
+            const formSubmit = $iq({
+                to: this.roomjid,
+                type: 'set'
+            })
                 .c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' });
 
-            formSubmit.c('x', { xmlns: 'jabber:x:data',
-                type: 'submit' });
+            formSubmit.c('x', {
+                xmlns: 'jabber:x:data',
+                type: 'submit'
+            });
 
             formSubmit.c('field', { 'var': 'FORM_TYPE' })
                 .c('value')
@@ -546,8 +554,8 @@ export default class ChatRoom extends Listenable {
         member.isFocus = this.xmpp.moderator.isFocusJid(jid);
         member.isHiddenDomain
             = jid && jid.indexOf('@') > 0
-                && this.options.hiddenDomain
-                    === jid.substring(jid.indexOf('@') + 1, jid.indexOf('/'));
+            && this.options.hiddenDomain
+            === jid.substring(jid.indexOf('@') + 1, jid.indexOf('/'));
 
         this.eventEmitter.emit(XMPPEvents.PRESENCE_RECEIVED, {
             fromHiddenDomain: member.isHiddenDomain,
@@ -564,51 +572,51 @@ export default class ChatRoom extends Listenable {
 
         parser.packet2JSON(pres, nodes);
         this.lastPresences[from] = nodes;
-
+        console.log("nodesnodesnodes", nodes)
         for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
 
             switch (node.tagName) {
-            case 'bot': {
-                const { attributes } = node;
+                case 'bot': {
+                    const { attributes } = node;
 
-                if (!attributes) {
+                    if (!attributes) {
+                        break;
+                    }
+                    const { type } = attributes;
+
+                    member.botType = type;
                     break;
                 }
-                const { type } = attributes;
-
-                member.botType = type;
-                break;
-            }
-            case 'nick':
-                member.nick = node.value;
-                break;
-            case 'userId':
-                member.id = node.value;
-                break;
-            case 'stats-id':
-                member.statsID = node.value;
-                break;
-            case 'identity':
-                member.identity = extractIdentityInformation(node, this.options.hiddenFromRecorderFeatureEnabled);
-                break;
-            case 'features': {
-                member.features = this._extractFeatures(node);
-                break;
-            }
-            case 'stat': {
-                const { attributes } = node;
-
-                if (!attributes) {
+                case 'nick':
+                    member.nick = node.value;
+                    break;
+                case 'userId':
+                    member.id = node.value;
+                    break;
+                case 'stats-id':
+                    member.statsID = node.value;
+                    break;
+                case 'identity':
+                    member.identity = extractIdentityInformation(node, this.options.hiddenFromRecorderFeatureEnabled);
+                    break;
+                case 'features': {
+                    member.features = this._extractFeatures(node);
                     break;
                 }
-                const { name } = attributes;
+                case 'stat': {
+                    const { attributes } = node;
 
-                if (name === 'version') {
-                    member.version = attributes.value;
+                    if (!attributes) {
+                        break;
+                    }
+                    const { name } = attributes;
+
+                    if (name === 'version') {
+                        member.version = attributes.value;
+                    }
+                    break;
                 }
-                break;
-            }
             }
         }
 
@@ -763,80 +771,80 @@ export default class ChatRoom extends Listenable {
             const node = nodes[i];
 
             switch (node.tagName) {
-            case 'nick':
-                if (!member.isFocus) {
-                    const displayName
-                        = this.xmpp.options.displayJids
-                            ? Strophe.getResourceFromJid(from)
-                            : member.nick;
+                case 'nick':
+                    if (!member.isFocus) {
+                        const displayName
+                            = this.xmpp.options.displayJids
+                                ? Strophe.getResourceFromJid(from)
+                                : member.nick;
 
-                    this.eventEmitter.emit(
-                        XMPPEvents.DISPLAY_NAME_CHANGED,
-                        from,
-                        displayName);
-                }
-                break;
-            case 'bridgeNotAvailable':
-                if (member.isFocus && !this.noBridgeAvailable) {
-                    this.noBridgeAvailable = true;
-                    this.eventEmitter.emit(XMPPEvents.BRIDGE_DOWN);
-                }
-                break;
-            case 'conference-properties':
-                if (member.isFocus) {
-                    const properties = {};
+                        this.eventEmitter.emit(
+                            XMPPEvents.DISPLAY_NAME_CHANGED,
+                            from,
+                            displayName);
+                    }
+                    break;
+                case 'bridgeNotAvailable':
+                    if (member.isFocus && !this.noBridgeAvailable) {
+                        this.noBridgeAvailable = true;
+                        this.eventEmitter.emit(XMPPEvents.BRIDGE_DOWN);
+                    }
+                    break;
+                case 'conference-properties':
+                    if (member.isFocus) {
+                        const properties = {};
 
-                    for (let j = 0; j < node.children.length; j++) {
-                        const { attributes } = node.children[j];
+                        for (let j = 0; j < node.children.length; j++) {
+                            const { attributes } = node.children[j];
 
-                        if (attributes && attributes.key) {
-                            properties[attributes.key] = attributes.value;
+                            if (attributes && attributes.key) {
+                                properties[attributes.key] = attributes.value;
+                            }
+                        }
+
+                        this.eventEmitter.emit(XMPPEvents.CONFERENCE_PROPERTIES_CHANGED, properties);
+
+                        // Log if Jicofo supports restart by terminate only once. This conference property does not change
+                        // during the call.
+                        if (typeof this.restartByTerminateSupported === 'undefined') {
+                            this.restartByTerminateSupported = properties['support-terminate-restart'] === 'true';
+                            logger.info(`Jicofo supports restart by terminate: ${this.supportsRestartByTerminate()}`);
                         }
                     }
+                    break;
+                case 'transcription-status': {
+                    const { attributes } = node;
 
-                    this.eventEmitter.emit(XMPPEvents.CONFERENCE_PROPERTIES_CHANGED, properties);
-
-                    // Log if Jicofo supports restart by terminate only once. This conference property does not change
-                    // during the call.
-                    if (typeof this.restartByTerminateSupported === 'undefined') {
-                        this.restartByTerminateSupported = properties['support-terminate-restart'] === 'true';
-                        logger.info(`Jicofo supports restart by terminate: ${this.supportsRestartByTerminate()}`);
+                    if (!attributes) {
+                        break;
                     }
-                }
-                break;
-            case 'transcription-status': {
-                const { attributes } = node;
 
-                if (!attributes) {
+                    const { status } = attributes;
+
+                    if (status && status !== this.transcriptionStatus) {
+                        this.transcriptionStatus = status;
+                        this.eventEmitter.emit(
+                            XMPPEvents.TRANSCRIPTION_STATUS_CHANGED,
+                            status
+                        );
+                    }
+
+
                     break;
                 }
+                case 'call-control': {
+                    const att = node.attributes;
 
-                const { status } = attributes;
-
-                if (status && status !== this.transcriptionStatus) {
-                    this.transcriptionStatus = status;
-                    this.eventEmitter.emit(
-                        XMPPEvents.TRANSCRIPTION_STATUS_CHANGED,
-                        status
-                    );
-                }
-
-
-                break;
-            }
-            case 'call-control': {
-                const att = node.attributes;
-
-                if (!att) {
+                    if (!att) {
+                        break;
+                    }
+                    this.phoneNumber = att.phone || null;
+                    this.phonePin = att.pin || null;
+                    this.eventEmitter.emit(XMPPEvents.PHONE_NUMBER_CHANGED);
                     break;
                 }
-                this.phoneNumber = att.phone || null;
-                this.phonePin = att.pin || null;
-                this.eventEmitter.emit(XMPPEvents.PHONE_NUMBER_CHANGED);
-                break;
-            }
-            default:
-                this.processNode(node, from);
+                default:
+                    this.processNode(node, from);
             }
         }
 
@@ -911,7 +919,7 @@ export default class ChatRoom extends Listenable {
             let tagHandlers = this.presHandlers[node.tagName];
 
             if (node.tagName.startsWith('jitsi_participant_')) {
-                tagHandlers = [ this.participantPropertyListener ];
+                tagHandlers = [this.participantPropertyListener];
             }
 
             if (tagHandlers) {
@@ -930,8 +938,10 @@ export default class ChatRoom extends Listenable {
      * @param elementName
      */
     sendMessage(message, elementName) {
-        const msg = $msg({ to: this.roomjid,
-            type: 'groupchat' });
+        const msg = $msg({
+            to: this.roomjid,
+            type: 'groupchat'
+        });
 
         // We are adding the message in a packet extension. If this element
         // is different from 'body', we add a custom namespace.
@@ -954,8 +964,10 @@ export default class ChatRoom extends Listenable {
      * @param elementName
      */
     sendPrivateMessage(id, message, elementName) {
-        const msg = $msg({ to: `${this.roomjid}/${id}`,
-            type: 'chat' });
+        const msg = $msg({
+            to: `${this.roomjid}/${id}`,
+            type: 'chat'
+        });
 
         // We are adding the message in packet. If this element is different
         // from 'body', we add our custom namespace for the same.
@@ -978,8 +990,10 @@ export default class ChatRoom extends Listenable {
      * @param subject
      */
     setSubject(subject) {
-        const msg = $msg({ to: this.roomjid,
-            type: 'groupchat' });
+        const msg = $msg({
+            to: this.roomjid,
+            type: 'groupchat'
+        });
 
         msg.c('subject', subject);
         this.connection.send(msg);
@@ -1004,7 +1018,7 @@ export default class ChatRoom extends Listenable {
             const reasonSelect
                 = $(pres).find(
                     '>x[xmlns="http://jabber.org/protocol/muc#user"]'
-                        + '>destroy>reason');
+                    + '>destroy>reason');
 
             if (reasonSelect.length) {
                 reason = reasonSelect.text();
@@ -1021,13 +1035,13 @@ export default class ChatRoom extends Listenable {
             = $(pres)
                 .find(
                     '>x[xmlns="http://jabber.org/protocol/muc#user"]>'
-                        + 'status[code="110"]')
+                    + 'status[code="110"]')
                 .length;
         const isKick
             = $(pres)
                 .find(
                     '>x[xmlns="http://jabber.org/protocol/muc#user"]'
-                        + '>status[code="307"]')
+                    + '>status[code="307"]')
                 .length;
         const membersKeys = Object.keys(this.members);
         const isReplaceParticipant = $(pres).find('flip_device').length;
@@ -1035,7 +1049,7 @@ export default class ChatRoom extends Listenable {
         if (isKick) {
             const actorSelect
                 = $(pres)
-                .find('>x[xmlns="http://jabber.org/protocol/muc#user"]>item>actor');
+                    .find('>x[xmlns="http://jabber.org/protocol/muc#user"]>item>actor');
             let actorNick;
 
             if (actorSelect.length) {
@@ -1045,8 +1059,8 @@ export default class ChatRoom extends Listenable {
             let reason;
             const reasonSelect
                 = $(pres).find(
-                '>x[xmlns="http://jabber.org/protocol/muc#user"]'
-                + '>item>reason');
+                    '>x[xmlns="http://jabber.org/protocol/muc#user"]'
+                    + '>item>reason');
 
             if (reasonSelect.length) {
                 reason = reasonSelect.text();
@@ -1162,7 +1176,7 @@ export default class ChatRoom extends Listenable {
             if ($(msg).find('>x[xmlns="http://jabber.org/protocol/muc#user"]>status[code="104"]').length) {
                 this.discoRoomInfo();
             } else if ((invite = $(msg).find('>x[xmlns="http://jabber.org/protocol/muc#user"]>invite'))
-                        && invite.length) {
+                && invite.length) {
                 const passwordSelect = $(msg).find('>x[xmlns="http://jabber.org/protocol/muc#user"]>password');
                 let password;
 
@@ -1194,7 +1208,7 @@ export default class ChatRoom extends Listenable {
         if (txt) {
             if (type === 'chat') {
                 this.eventEmitter.emit(XMPPEvents.PRIVATE_MESSAGE_RECEIVED,
-                        from, txt, this.myroomjid, stamp);
+                    from, txt, this.myroomjid, stamp);
             } else if (type === 'groupchat') {
                 const nickEl = $(msg).find('>nick');
                 let nick;
@@ -1228,19 +1242,19 @@ export default class ChatRoom extends Listenable {
         }
 
         if ($(pres)
-                .find(
-                    '>error[type="auth"]'
-                        + '>not-authorized['
-                        + 'xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]')
-                .length) {
+            .find(
+                '>error[type="auth"]'
+                + '>not-authorized['
+                + 'xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]')
+            .length) {
             logger.log('on password required', from);
             this.eventEmitter.emit(XMPPEvents.PASSWORD_REQUIRED);
         } else if ($(pres)
-                .find(
-                    '>error[type="cancel"]'
-                        + '>not-allowed['
-                        + 'xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]')
-                .length) {
+            .find(
+                '>error[type="cancel"]'
+                + '>not-allowed['
+                + 'xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"]')
+            .length) {
             const toDomain = Strophe.getDomainFromJid(pres.getAttribute('to'));
 
             if (toDomain === this.xmpp.options.hosts.anonymousdomain) {
@@ -1314,7 +1328,7 @@ export default class ChatRoom extends Listenable {
 
             this.eventEmitter.emit(XMPPEvents.ROOM_CONNECT_MEMBERS_ONLY_ERROR, lobbyRoomJid, waitingForHost);
         } else if ((errorDescriptionNode = $(pres).find(
-                '>error[type="modify"]>displayname-required[xmlns="http://jitsi.org/jitmeet"]')).length) {
+            '>error[type="modify"]>displayname-required[xmlns="http://jitsi.org/jitmeet"]')).length) {
             logger.warn('display name required ', pres);
             this.eventEmitter.emit(XMPPEvents.DISPLAY_NAME_REQUIRED, errorDescriptionNode[0].attributes.lobby?.value);
         } else {
@@ -1333,13 +1347,13 @@ export default class ChatRoom extends Listenable {
             to: this.roomjid,
             type: 'set'
         })
-        .c('query', { xmlns: 'http://jabber.org/protocol/muc#admin' })
-        .c('item', {
-            affiliation,
-            jid: Strophe.getBareJidFromJid(jid)
-        })
-        .c('reason').t(`Your affiliation has been changed to '${affiliation}'.`)
-        .up().up().up();
+            .c('query', { xmlns: 'http://jabber.org/protocol/muc#admin' })
+            .c('item', {
+                affiliation,
+                jid: Strophe.getBareJidFromJid(jid)
+            })
+            .c('reason').t(`Your affiliation has been changed to '${affiliation}'.`)
+            .up().up().up();
 
         this.connection.sendIQ(
             grantIQ,
@@ -1353,11 +1367,15 @@ export default class ChatRoom extends Listenable {
      * @param reason
      */
     kick(jid, reason = 'You have been kicked.') {
-        const kickIQ = $iq({ to: this.roomjid,
-            type: 'set' })
+        const kickIQ = $iq({
+            to: this.roomjid,
+            type: 'set'
+        })
             .c('query', { xmlns: 'http://jabber.org/protocol/muc#admin' })
-            .c('item', { nick: Strophe.getResourceFromJid(jid),
-                role: 'none' })
+            .c('item', {
+                nick: Strophe.getResourceFromJid(jid),
+                role: 'none'
+            })
             .c('reason').t(reason).up().up().up();
 
         this.connection.sendIQ(
@@ -1385,10 +1403,10 @@ export default class ChatRoom extends Listenable {
                 .c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' }),
             res => {
                 if ($(res)
-                        .find(
-                            '>query>x[xmlns="jabber:x:data"]'
-                                + '>field[var="muc#roomconfig_roomsecret"]')
-                        .length) {
+                    .find(
+                        '>query>x[xmlns="jabber:x:data"]'
+                        + '>field[var="muc#roomconfig_roomsecret"]')
+                    .length) {
                     const formsubmit
                         = $iq({
                             to: this.roomjid,
@@ -1416,7 +1434,7 @@ export default class ChatRoom extends Listenable {
                         .up();
                     formsubmit
                         .c('field',
-                             { 'var': 'muc#roomconfig_passwordprotectedroom' })
+                            { 'var': 'muc#roomconfig_passwordprotectedroom' })
                         .c('value')
                         .t(key === null || key.length === 0 ? '0' : '1')
                         .up()
@@ -1472,9 +1490,11 @@ export default class ChatRoom extends Listenable {
             // first grant membership to all that are in the room
             const affiliationsIq = $iq({
                 to: this.roomjid,
-                type: 'set' })
+                type: 'set'
+            })
                 .c('query', {
-                    xmlns: 'http://jabber.org/protocol/muc#admin' });
+                    xmlns: 'http://jabber.org/protocol/muc#admin'
+                });
             let sendIq = false;
 
             Object.values(this.members).forEach(m => {
@@ -1490,7 +1510,7 @@ export default class ChatRoom extends Listenable {
             sendIq && this.xmpp.connection.sendIQ(affiliationsIq.up());
         }
 
-        const errorCallback = onError ? onError : () => {}; // eslint-disable-line no-empty-function
+        const errorCallback = onError ? onError : () => { }; // eslint-disable-line no-empty-function
 
         this.xmpp.connection.sendIQ(
             $iq({
@@ -1813,8 +1833,10 @@ export default class ChatRoom extends Listenable {
     muteParticipant(jid, mute, mediaType) {
         logger.info('set mute', mute, jid);
         const iqToFocus = $iq(
-            { to: this.focusMucJid,
-                type: 'set' })
+            {
+                to: this.focusMucJid,
+                type: 'set'
+            })
             .c('mute', {
                 xmlns: `http://jitsi.org/jitmeet/${mediaType}`,
                 jid
