@@ -572,7 +572,7 @@ export default class ChatRoom extends Listenable {
 
         parser.packet2JSON(pres, nodes);
         this.lastPresences[from] = nodes;
-        console.log("nodesnodesnodes", nodes, member)
+        console.log("nodesnodesnodes", nodes)
         for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
 
@@ -594,7 +594,7 @@ export default class ChatRoom extends Listenable {
                 case 'userId':
                     member.id = node.value;
                     break;
-                case 'serverId':
+                case 'server_id':
                     member.id = node.value;
                     break;
                 case 'stats-id':
@@ -688,7 +688,7 @@ export default class ChatRoom extends Listenable {
                     XMPPEvents.MUC_MEMBER_JOINED,
                     from,
                     member.nick,
-                    member.serverId,
+                    member.server_id,
                     member.role,
                     member.isHiddenDomain,
                     member.statsID,
